@@ -2,12 +2,18 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
-import {getCurrentProfile} from "../../actions/profileActions";
+import {getCurrentProfile, deleteAccount} from "../../actions/profileActions";
 import Spinner from '../common/Spinner';
+import ProfileAction from './ProfileActions';
 class Dashboard extends Component {
 
     componentDidMount() {
         this.props.getCurrentProfile();
+    }
+
+    onDeleteClick(e)
+    {
+        this.props.deleteAccount();
     }
 
     render() {
@@ -25,7 +31,21 @@ class Dashboard extends Component {
            // Check if logged in user has profile data
             if(Object.keys(profile).length>0)
             {
-                dashboardContent = <h4>TODO: Display Profile</h4>
+                dashboardContent = (
+                    <div>
+                        <p className={"lead text-muted"}>Welcome <Link to={`/profile/${profile.handle}`}>{user.name}</Link></p>
+                    <ProfileAction/>
+                        // TODO: exp and edu
+
+                        <div style={{marginBottom:'60px'}}>
+                            <button
+                                onClick={this.onDeleteClick.bind(this)}
+                                className="btn btn-danger">
+                                Delete My Account
+                            </button>
+                        </div>
+                    </div>
+                );
             }
             else
             {
@@ -61,10 +81,11 @@ class Dashboard extends Component {
 Dashboard.prototypes = {
     profile: PropTypes.object.isRequired,
     getCurrentProfile: PropTypes.func.isRequired,
+    deleteAccount: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired
 };
 const mapStateToProps = state => ({
     profile: state.profile,
     auth: state.auth
 });
-export default connect(mapStateToProps, {getCurrentProfile})(Dashboard);
+export default connect(mapStateToProps, {getCurrentProfile,deleteAccount})(Dashboard);
